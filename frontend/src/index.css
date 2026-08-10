@@ -1,0 +1,833 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   THEME CSS VARIABLES (Light/Dark)
+   --------------------------------------------
+   All colour decisions live here. Components should reference these tokens
+   (directly or through the helper classes further down) instead of hard-coding
+   hex values or one-off Tailwind palette shades.
+   ============================================ */
+:root {
+  /* Brand / action colours */
+  --color-primary: #107c41;         /* primary buttons, links, key actions */
+  --color-primary-hover: #0d6836;
+  --color-primary-pressed: #0a522b;
+  --color-primary-contrast: #ffffff;
+  --color-primary-subtle: #dcf1e7;  /* selected / active background */
+  --color-primary-subtle-text: #0a522b;
+  --color-accent: #2ca873;          /* active nav, icons, highlights */
+
+  /*
+   * Destructive / warning.
+   * #E47D51 is kept as the literal Delete colour. White label text on it only
+   * reaches 2.9:1, so the label uses a deep coral-brown (4.9:1, WCAG AA) and
+   * hover lightens rather than darkens to preserve that contrast.
+   */
+  --color-danger: #e47d51;
+  --color-danger-hover: #efa483;
+  --color-danger-pressed: #f5c4af;
+  --color-danger-contrast: #4a1f0f;
+  --color-danger-subtle: #fdf1ec;
+  --color-danger-text: #b0512d;     /* readable coral for inline error copy */
+
+  /* Background hierarchy */
+  --color-bg-base: #f4f5f7;         /* page background */
+  --color-bg-surface: #ffffff;      /* cards, navbar, inputs */
+  --color-bg-elevated: #ffffff;
+  --color-bg-muted: #eceef1;        /* subtle section fills */
+
+  /* Text hierarchy */
+  --color-text-primary: #333333;
+  --color-text-secondary: #73787d;
+  --color-text-muted: #73787d;
+  --color-text-placeholder: #73787d;
+
+  /* Borders & dividers */
+  --color-border: #e2e5e9;
+  --color-border-strong: #cbd1d7;
+  --color-divider: #e2e5e9;
+
+  /* Interactive states */
+  --color-hover: #eceef1;
+  --color-active: #dcf1e7;
+
+  /* Input fields */
+  --color-input-bg: #ffffff;
+  --color-input-border: #cbd1d7;
+  --color-input-hover: #a9b1b8;
+
+  /* Focus ring */
+  --color-focus-ring: #2ca873;
+
+  /* Elevation — intentionally subtle for a business-app feel */
+  --shadow-sm: 0 1px 2px 0 rgb(16 24 32 / 0.06);
+  --shadow-md: 0 1px 3px 0 rgb(16 24 32 / 0.08), 0 1px 2px -1px rgb(16 24 32 / 0.06);
+  --shadow-lg: 0 8px 20px -6px rgb(16 24 32 / 0.14), 0 3px 8px -4px rgb(16 24 32 / 0.08);
+
+  /* Ring offset for focus states */
+  --ring-offset-color: #f4f5f7;
+
+  /* Shared radius */
+  --radius-card: 10px;
+}
+
+:root.dark {
+  /*
+   * Dark theme is a re-tone of the same product, not an inversion. Green stays
+   * the brand/action colour (lifted to the brighter #2CA873 so it keeps
+   * contrast on dark surfaces) and coral stays destructive.
+   */
+  --color-primary: #2ca873;
+  --color-primary-hover: #35bc82;
+  --color-primary-pressed: #55bc90;
+  --color-primary-contrast: #06231a;
+  --color-primary-subtle: rgba(44, 168, 115, 0.16);
+  --color-primary-subtle-text: #8ed2b2;
+  --color-accent: #55bc90;
+
+  --color-danger: #e98e67;
+  --color-danger-hover: #efa483;
+  --color-danger-pressed: #f5c4af;
+  --color-danger-contrast: #2a1206;
+  --color-danger-subtle: rgba(228, 125, 81, 0.16);
+  --color-danger-text: #efa483;
+
+  /* Dark surfaces: deep neutral slate, never pure black */
+  --color-bg-base: #10151a;
+  --color-bg-surface: #171e24;
+  --color-bg-elevated: #1f272f;
+  --color-bg-muted: #1c242b;
+
+  --color-text-primary: #e7eaed;
+  --color-text-secondary: #a8b1b9;
+  --color-text-muted: #8a939b;
+  --color-text-placeholder: #6e777f;
+
+  /* Clear, visible borders */
+  --color-border: #2b343c;
+  --color-border-strong: #3a444d;
+  --color-divider: #2b343c;
+
+  --color-hover: #212a32;
+  --color-active: rgba(44, 168, 115, 0.16);
+
+  --color-input-bg: #1a222a;
+  --color-input-border: #3a444d;
+  --color-input-hover: #4c5762;
+
+  --color-focus-ring: #55bc90;
+
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.4);
+  --shadow-md: 0 1px 3px 0 rgb(0 0 0 / 0.5), 0 1px 2px -1px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 8px 20px -6px rgb(0 0 0 / 0.6), 0 3px 8px -4px rgb(0 0 0 / 0.5);
+
+  --ring-offset-color: #10151a;
+}
+
+/* ============================================
+   THEME TRANSITIONS
+   Only colour-ish properties are animated — never layout or size.
+   ============================================ */
+@media (prefers-reduced-motion: no-preference) {
+  html,
+  body,
+  .theme-transition,
+  .theme-transition *,
+  nav,
+  .card,
+  .btn,
+  .input,
+  section,
+  header,
+  main,
+  [class*="bg-"],
+  [class*="text-"],
+  [class*="border-"] {
+    transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 240ms;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* Custom base styles */
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-bg-base);
+    color: var(--color-text-primary);
+    @apply antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-semibold tracking-tight;
+    color: var(--color-text-primary);
+  }
+
+  /* Better focus outlines for accessibility */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-offset-2;
+    --tw-ring-color: var(--color-focus-ring);
+    --tw-ring-offset-color: var(--ring-offset-color);
+  }
+
+  /* Screen reader only content */
+  .sr-only {
+    @apply absolute w-px h-px p-0 -m-px overflow-hidden whitespace-nowrap border-0;
+    clip: rect(0, 0, 0, 0);
+  }
+}
+
+/* Custom component styles */
+@layer components {
+  /* ---------- Buttons ---------- */
+  .btn {
+    @apply inline-flex items-center justify-center px-4 rounded-lg font-medium
+           focus:outline-none focus:ring-2 focus:ring-offset-2
+           disabled:opacity-50 disabled:cursor-not-allowed;
+    /* Consistent control height across every button variant */
+    min-height: 42px;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    --tw-ring-color: var(--color-focus-ring);
+    --tw-ring-offset-color: var(--ring-offset-color);
+    transition: background-color 200ms, border-color 200ms, color 200ms, box-shadow 200ms;
+  }
+
+  .btn:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+
+  .btn-primary {
+    background-color: var(--color-primary);
+    color: var(--color-primary-contrast);
+    border: 1px solid transparent;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background-color: var(--color-primary-hover);
+    box-shadow: var(--shadow-md);
+  }
+
+  .btn-primary:active:not(:disabled) {
+    background-color: var(--color-primary-pressed);
+  }
+
+  .btn-secondary {
+    background-color: var(--color-bg-surface);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border-strong);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .btn-secondary:hover:not(:disabled) {
+    background-color: var(--color-hover);
+    border-color: var(--color-input-hover);
+  }
+
+  /* Destructive actions use the coral accent */
+  .btn-danger {
+    background-color: var(--color-danger);
+    color: var(--color-danger-contrast);
+    border: 1px solid transparent;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .btn-danger:hover:not(:disabled) {
+    background-color: var(--color-danger-hover);
+    box-shadow: var(--shadow-md);
+  }
+
+  .btn-danger:active:not(:disabled) {
+    background-color: var(--color-danger-pressed);
+  }
+
+  .btn-danger:focus {
+    --tw-ring-color: var(--color-danger);
+  }
+
+  .btn-sm {
+    @apply px-3 text-sm;
+    min-height: 36px;
+  }
+
+  /* ---------- Inputs ---------- */
+  .input {
+    @apply w-full px-4 rounded-lg
+           focus:outline-none focus:ring-2
+           disabled:cursor-not-allowed;
+    min-height: 42px;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    background-color: var(--color-input-bg);
+    border: 1px solid var(--color-input-border);
+    color: var(--color-text-primary);
+    --tw-ring-color: var(--color-focus-ring);
+    --tw-ring-offset-color: var(--ring-offset-color);
+    transition: background-color 200ms, border-color 200ms, box-shadow 200ms;
+  }
+
+  .input:focus {
+    border-color: var(--color-primary);
+  }
+
+  .input::placeholder {
+    color: var(--color-text-placeholder);
+  }
+
+  .input:disabled {
+    background-color: var(--color-bg-muted);
+    opacity: 0.7;
+  }
+
+  .input:hover:not(:disabled):not(:focus) {
+    border-color: var(--color-input-hover);
+  }
+
+  /* Invalid field state — coral, matching destructive accent */
+  .input-error,
+  .input[aria-invalid='true'] {
+    border-color: var(--color-danger);
+  }
+
+  select.input {
+    /* Keep native arrow but align padding with text inputs */
+    @apply pr-10;
+  }
+
+  .card {
+    background-color: var(--color-bg-surface);
+    @apply p-6;
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--color-border);
+  }
+
+  .label {
+    @apply block text-sm font-medium mb-1.5;
+    color: var(--color-text-secondary);
+  }
+
+  .error-text {
+    @apply text-sm mt-1.5 flex items-center gap-1;
+    color: var(--color-danger-text);
+  }
+
+  /* Required-field marker and other inline danger text */
+  .text-required,
+  .text-theme-danger {
+    color: var(--color-danger-text);
+  }
+
+  /* Better spacing for mobile */
+  .container-padding {
+    @apply px-4 sm:px-6 lg:px-8;
+  }
+
+  .section-spacing {
+    @apply py-6 sm:py-8;
+  }
+
+  /* Improved card grid */
+  .card-grid {
+    @apply grid gap-4 sm:gap-6
+           grid-cols-1
+           sm:grid-cols-2
+           lg:grid-cols-3
+           xl:grid-cols-4;
+  }
+
+  /* Theme-aware surface classes */
+  .surface {
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
+  }
+
+  .surface-elevated {
+    background-color: var(--color-bg-elevated);
+    border: 1px solid var(--color-border-strong);
+  }
+
+  .surface-muted {
+    background-color: var(--color-bg-muted);
+  }
+
+  /* Theme-aware text classes */
+  .text-theme-primary {
+    color: var(--color-text-primary);
+  }
+
+  .text-theme-secondary {
+    color: var(--color-text-secondary);
+  }
+
+  .text-theme-muted {
+    color: var(--color-text-muted);
+  }
+
+  /* Brand-coloured text (links, emphasis) */
+  .text-theme-accent {
+    color: var(--color-primary);
+  }
+
+  /* Accent link: brand colour with an underline on hover */
+  .link-accent {
+    color: var(--color-primary);
+    transition: color 200ms;
+  }
+
+  .link-accent:hover {
+    color: var(--color-primary-hover);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  /* Subtle link: secondary text that turns brand-coloured on hover */
+  .link-subtle {
+    color: var(--color-text-secondary);
+    transition: color 200ms;
+  }
+
+  .link-subtle:hover {
+    color: var(--color-primary);
+  }
+
+  /* Heading inside a hoverable card: picks up the brand colour with the card */
+  .title-hover-accent {
+    color: var(--color-text-primary);
+    transition: color 200ms;
+  }
+
+  .group:hover .title-hover-accent {
+    color: var(--color-primary);
+  }
+
+  /* Theme-aware border classes */
+  .border-theme {
+    border-color: var(--color-border);
+  }
+
+  .border-theme-border {
+    border-color: var(--color-border);
+  }
+
+  .border-theme-strong {
+    border-color: var(--color-border-strong);
+  }
+
+  .divider-theme {
+    border-color: var(--color-divider);
+  }
+
+  /* Theme-aware surface/interaction helpers */
+  .bg-theme-input {
+    background-color: var(--color-input-bg);
+  }
+
+  .bg-theme-surface {
+    background-color: var(--color-bg-surface);
+  }
+
+  .bg-theme-muted {
+    background-color: var(--color-bg-muted);
+  }
+
+  .bg-theme-hover {
+    background-color: var(--color-hover);
+  }
+
+  /* Navbar user-menu trigger */
+  .nav-user-trigger {
+    color: var(--color-text-primary);
+    transition: background-color 200ms, color 200ms;
+  }
+
+  .nav-user-trigger:hover {
+    background-color: var(--color-hover);
+  }
+}
+
+/* Loading spinner with better sizing */
+.spinner {
+  border: 3px solid var(--color-border);
+  border-radius: 50%;
+  border-top-color: var(--color-primary);
+  width: 40px;
+  height: 40px;
+  animation: spin 0.8s linear infinite;
+}
+
+.spinner-sm {
+  width: 20px;
+  height: 20px;
+  border-width: 2px;
+}
+
+.spinner-lg {
+  width: 60px;
+  height: 60px;
+  border-width: 4px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Smooth transitions */
+.fade-in {
+  animation: fadeIn 0.24s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Slide in from bottom (mobile menu) */
+.slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Pulse animation for loading */
+.pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Better skeleton loader */
+.skeleton {
+  @apply animate-pulse rounded;
+  background-color: var(--color-bg-muted);
+}
+
+/* Focus visible for better keyboard navigation */
+.focus-visible-ring {
+  @apply focus-visible:ring-2 focus-visible:ring-offset-2;
+  --tw-ring-color: var(--color-focus-ring);
+  --tw-ring-offset-color: var(--ring-offset-color);
+}
+
+/* Better hover states */
+.hover-lift {
+  transition: transform 200ms, box-shadow 200ms, border-color 200ms;
+}
+
+.hover-lift:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-border-strong);
+}
+
+/* Empty state styling */
+.empty-state {
+  @apply flex flex-col items-center justify-center py-12 sm:py-16 lg:py-20 px-4;
+}
+
+.empty-state-icon {
+  @apply w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 mb-4;
+  color: var(--color-text-muted);
+}
+
+.empty-state-title {
+  @apply text-lg sm:text-xl font-semibold mb-2 text-center;
+  color: var(--color-text-primary);
+}
+
+.empty-state-description {
+  @apply text-sm sm:text-base text-center max-w-md;
+  color: var(--color-text-secondary);
+}
+
+/* Better form spacing */
+.form-group {
+  @apply space-y-6;
+}
+
+.form-row {
+  @apply grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6;
+}
+
+/* Responsive text */
+.heading-responsive {
+  @apply text-2xl sm:text-3xl lg:text-4xl;
+}
+
+.subheading-responsive {
+  @apply text-lg sm:text-xl;
+}
+
+/* Better mobile navigation */
+@media (max-width: 640px) {
+  .mobile-nav-item {
+    @apply text-base py-3;
+  }
+}
+
+/* Improved focus indicators for links and buttons */
+a:focus-visible,
+button:focus-visible {
+  @apply outline-none ring-2 ring-offset-2 rounded;
+  --tw-ring-color: var(--color-focus-ring);
+  --tw-ring-offset-color: var(--ring-offset-color);
+}
+
+/* Better spacing between sections */
+.section-divider {
+  @apply my-6 sm:my-8;
+  border-top: 1px solid var(--color-divider);
+}
+
+/* Responsive padding */
+.responsive-padding {
+  @apply p-4 sm:p-6 lg:p-8;
+}
+
+/* Better card hover effect */
+.card-interactive {
+  @apply cursor-pointer;
+  transition: box-shadow 200ms, border-color 200ms;
+}
+
+.card-interactive:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-border-strong);
+}
+
+/* Skip to main content link (accessibility) */
+.skip-link {
+  @apply absolute -top-full left-0 px-4 py-2 focus:top-0 z-50 transition-all;
+  background-color: var(--color-primary);
+  color: var(--color-primary-contrast);
+}
+
+/* ============================================
+   THEME TOGGLE STYLES
+   ============================================ */
+.theme-toggle {
+  @apply relative flex items-center justify-center rounded-lg;
+  width: 40px;
+  height: 40px;
+  background-color: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  transition: background-color 200ms, border-color 200ms, color 200ms, box-shadow 200ms;
+}
+
+.theme-toggle:hover {
+  background-color: var(--color-hover);
+  border-color: var(--color-border-strong);
+  color: var(--color-text-primary);
+}
+
+.theme-toggle:focus-visible {
+  @apply outline-none ring-2 ring-offset-2;
+  --tw-ring-color: var(--color-focus-ring);
+  --tw-ring-offset-color: var(--ring-offset-color);
+}
+
+.theme-toggle:active {
+  background-color: var(--color-active);
+  color: var(--color-primary);
+}
+
+/* Icon transition */
+.theme-toggle-icon {
+  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1), opacity 200ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle-icon {
+    transition: none;
+  }
+}
+
+/* Sun rotation on toggle */
+:root.dark .theme-toggle-icon {
+  transform: rotate(180deg);
+}
+
+/* ============================================
+   PAGE-SPECIFIC THEME CLASSES
+   ============================================ */
+/* Page background */
+.page-bg {
+  background-color: var(--color-bg-base);
+  min-height: 100vh;
+}
+
+/* Card surfaces */
+.card-surface {
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius-card);
+}
+
+/* Elevated card section (e.g., experience section in details) */
+.card-section-muted {
+  background-color: var(--color-bg-muted);
+  border-top: 1px solid var(--color-divider);
+}
+
+/* Navigation */
+.nav-surface {
+  background-color: var(--color-bg-surface);
+  box-shadow: var(--shadow-sm);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.nav-link {
+  color: var(--color-text-secondary);
+  transition: background-color 200ms, color 200ms;
+}
+
+.nav-link:hover {
+  background-color: var(--color-hover);
+  color: var(--color-text-primary);
+}
+
+/* Active navigation: soft green background with the active green text */
+.nav-link-active {
+  background-color: var(--color-primary-subtle);
+  color: var(--color-primary-subtle-text);
+}
+
+/* Search/filter sections */
+.search-surface {
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius-card);
+}
+
+/* Badge styles */
+.badge {
+  @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium;
+}
+
+.badge-primary {
+  background-color: var(--color-primary-subtle);
+  color: var(--color-primary-subtle-text);
+}
+
+.badge-success {
+  background-color: var(--color-primary-subtle);
+  color: var(--color-primary-subtle-text);
+}
+
+/* Neutral badge for secondary metadata */
+.badge-neutral {
+  background-color: var(--color-bg-muted);
+  color: var(--color-text-secondary);
+}
+
+.badge-danger {
+  background-color: var(--color-danger-subtle);
+  color: var(--color-danger-text);
+}
+
+/* List item surfaces (search results) */
+.list-item-surface {
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  transition: box-shadow 200ms, border-color 200ms;
+}
+
+.list-item-surface:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-border-strong);
+}
+
+/* Text colors using CSS variables for consistency */
+.text-primary-theme {
+  color: var(--color-text-primary);
+}
+
+.text-secondary-theme {
+  color: var(--color-text-secondary);
+}
+
+.text-muted-theme {
+  color: var(--color-text-muted);
+}
+
+/* Brand-coloured icon tile (department cards, avatars) */
+.icon-tile {
+  background-color: var(--color-primary-subtle);
+  color: var(--color-primary);
+}
+
+/* Solid brand tile (logo, avatar) */
+.icon-tile-solid {
+  background-color: var(--color-primary);
+  color: var(--color-primary-contrast);
+}
+
+/* Icon button for actions */
+.icon-btn {
+  color: var(--color-text-muted);
+  transition: color 200ms, background-color 200ms;
+}
+
+.icon-btn:hover {
+  color: var(--color-text-primary);
+  background-color: var(--color-hover);
+}
+
+/* Destructive menu/list item (e.g. Logout) */
+.menu-item-danger {
+  color: var(--color-danger-text);
+  transition: background-color 200ms, color 200ms;
+}
+
+.menu-item-danger:hover {
+  background-color: var(--color-danger-subtle);
+  color: var(--color-danger-text);
+}

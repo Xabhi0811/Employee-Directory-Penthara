@@ -1,0 +1,54 @@
+# Dependencies
+node_modules/
+
+# Environment variables — .env.example files are committed, real .env files are not
+.env
+.env.local
+.env.production
+.env.*.local
+
+# Build output
+dist/
+dist-ssr/
+build/
+*.local
+
+# Test coverage output
+coverage/
+.nyc_output/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Caches
+.cache/
+.vite/
+.eslintcache
+
+# Temporary / editor scratch files
+*.tmp
+*.temp
+*.bak
+*.orig
+*.rej
+*~
+*.swp
+*.swo
+
+# Editors and IDEs
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
