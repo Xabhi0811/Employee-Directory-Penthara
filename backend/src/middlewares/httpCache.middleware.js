@@ -41,6 +41,8 @@ const setCacheControl = (options = {}) => {
       directives.push('no-store');
     } else if (noCache) {
       directives.push('no-cache');
+      if (isPrivate) directives.push('private');
+      if (mustRevalidate) directives.push('must-revalidate');
     } else {
       if (isPublic) directives.push('public');
       if (isPrivate) directives.push('private');
@@ -194,6 +196,17 @@ const cacheConfigs = {
     maxAge: 31536000,
     public: true,
     immutable: true,
+  },
+
+  // Revalidate - authenticated per-user data that must never be served stale
+  // from the browser's own HTTP cache. Forces a conditional request every
+  // time (If-None-Match), so the server's ETag can still answer with a cheap
+  // 304 when nothing changed, but a genuinely new/updated/deleted record is
+  // never masked by max-age caching in the browser.
+  revalidate: {
+    noCache: true,
+    private: true,
+    mustRevalidate: true,
   },
 };
 

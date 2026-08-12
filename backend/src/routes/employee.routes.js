@@ -32,29 +32,29 @@ router.use(authenticate);
 // Get all unique departments (cached for 10 minutes with ETag support)
 router.get(
   '/departments/list',
-  applyCacheConfig('medium'), // 30 minutes cache
+  applyCacheConfig('revalidate'), // browser must always revalidate; server cache still answers fast
   etag(), // ETag support for conditional requests
   cacheResponse({ cacheName: 'departments', ttl: 10 * 60 * 1000 }),
   employeeController.getDepartments
 );
 
-// Get all employees with optional search (cached for 5 minutes with ETag)
+// Get all employees with optional search (server-cached, browser always revalidates)
 router.get(
   '/',
   protectQueryParams,
   searchValidation,
-  applyCacheConfig('short'), // 5 minutes cache
+  applyCacheConfig('revalidate'), // browser must always revalidate; server cache still answers fast
   etag(), // ETag support
   vary(['Accept', 'Accept-Encoding']), // Vary by Accept headers
   cacheResponse({ cacheName: 'employees', ttl: 5 * 60 * 1000 }),
   employeeController.getAllEmployees
 );
 
-// Get single employee by ID (cached for 5 minutes with ETag)
+// Get single employee by ID (server-cached, browser always revalidates)
 router.get(
   '/:id',
   employeeIdValidation,
-  applyCacheConfig('short'), // 5 minutes cache
+  applyCacheConfig('revalidate'), // browser must always revalidate; server cache still answers fast
   etag(), // ETag support
   cacheResponse({ cacheName: 'employees', ttl: 5 * 60 * 1000 }),
   employeeController.getEmployeeById

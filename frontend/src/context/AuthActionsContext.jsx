@@ -66,7 +66,6 @@ export const AuthActionsProvider = ({ children }) => {
   const signup = useCallback(
     async (userData) => {
       try {
-        setLoading(true);
         setError(null);
         const newUser = await signupApi(userData);
         
@@ -77,23 +76,31 @@ export const AuthActionsProvider = ({ children }) => {
         setError(errorMessage);
         toast.error(errorMessage);
         throw err;
-      } finally {
-        setLoading(false);
       }
     },
-    [setLoading, setError]
+    [setError]
   );
 
   /**
-   * Login - Authenticate user
+   * Login - Authenticate user.
+   *
+   * Deliberately does NOT touch `setLoading`. The `loading` flag is the
+   * boot-time auth-check sentinel that ProtectedRoute uses to decide whether
+   * to show a spinner or redirect. If login() sets loading=true and then
+   * loading=false, ProtectedRoute re-evaluates before isAuthenticated has
+   * propagated through the tree, causing a race where Home mounts before the
+   * auth state is actually committed and the cookies are ready to use.
    */
   const login = useCallback(
     async (credentials) => {
       try {
-        setLoading(true);
         setError(null);
         const { user: userData } = await loginApi(credentials);
-        
+
+        // Update auth state synchronously before the caller navigates.
+        // React will batch these two setState calls together so ProtectedRoute
+        // sees loading=false (unchanged), isAuthenticated=true, user=<data>
+        // in a single render — no intermediate unauthenticated flash.
         setUser(userData);
         setIsAuthenticated(true);
         toast.success(`Welcome back, ${userData.name}!`);
@@ -105,21 +112,21 @@ export const AuthActionsProvider = ({ children }) => {
         setIsAuthenticated(false);
         toast.error(errorMessage);
         throw err;
-      } finally {
-        setLoading(false);
       }
     },
-    [setUser, setLoading, setError, setIsAuthenticated]
+    [setUser, setError, setIsAuthenticated]
   );
 
   /**
-   * Logout - Clear authentication
+   * Logout - Clear authentication.
+   *
+   * Like login(), deliberately does NOT touch `setLoading` — that flag is
+   * owned by the boot-time checkAuth flow.
    */
   const logout = useCallback(async () => {
     try {
-      setLoading(true);
       await logoutApi();
-      
+
       setUser(null);
       setIsAuthenticated(false);
       setError(null);
@@ -130,10 +137,8 @@ export const AuthActionsProvider = ({ children }) => {
       setIsAuthenticated(false);
       setError(null);
       toast.error('Logout failed, but session cleared');
-    } finally {
-      setLoading(false);
     }
-  }, [setUser, setLoading, setError, setIsAuthenticated]);
+  }, [setUser, setError, setIsAuthenticated]);
 
   /**
    * Clear error

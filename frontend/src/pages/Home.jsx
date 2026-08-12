@@ -4,6 +4,7 @@ import SearchInput from '../components/SearchInput';
 import DepartmentList from '../components/DepartmentList';
 import EmployeeSearchResults from '../components/EmployeeSearchResults';
 import { useEmployeeContext } from '../context/EmployeeContext';
+import { useAuthData } from '../context/AuthDataContext';
 
 /**
  * Home Page Component
@@ -28,10 +29,15 @@ const Home = () => {
   const [departmentSearch, setDepartmentSearch] = useState('');
   const [globalSearch, setGlobalSearch] = useState('');
 
-  // Load departments on mount
+  const { isAuthenticated } = useAuthData();
+
+  // Load departments once auth is confirmed. Guarding on isAuthenticated
+  // prevents a race where the effect fires before the cookie is available,
+  // which would cause a 401 on the very first render after login.
   useEffect(() => {
+    if (!isAuthenticated) return;
     fetchDepartmentSummaries().catch(() => {});
-  }, [fetchDepartmentSummaries]);
+  }, [isAuthenticated, fetchDepartmentSummaries]);
 
   // When a global search is active, fetch employees matching the term from the
   // backend so we get full-text search across all departments.

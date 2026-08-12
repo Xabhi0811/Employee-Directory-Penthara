@@ -8,7 +8,7 @@ import { useAuth } from '../context/AuthContext';
  */
 const Login = () => {
   const navigate = useNavigate();
-  const { login, loading, error, clearError, isAuthenticated } = useAuth();
+  const { login, error, clearError, isAuthenticated } = useAuth();
   
   const [formData, setFormData] = useState({
     email: '',
@@ -16,6 +16,9 @@ const Login = () => {
   });
   
   const [validationErrors, setValidationErrors] = useState({});
+  // Local submitting flag for button state. Deliberately separate from
+  // AuthDataContext's `loading`, which is the boot-time auth-check sentinel.
+  const [submitting, setSubmitting] = useState(false);
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -87,6 +90,7 @@ const Login = () => {
     }
 
     try {
+      setSubmitting(true);
       await login(formData);
       // Navigate to home on success
       navigate('/', { replace: true });
@@ -95,6 +99,8 @@ const Login = () => {
       if (process.env.NODE_ENV === 'development') {
         console.error('Login failed:', err);
       }
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -127,7 +133,7 @@ const Login = () => {
                 onChange={handleChange}
                 className={`input ${validationErrors.email ? 'input-error' : ''}`}
                 placeholder="you@example.com"
-                disabled={loading}
+                disabled={submitting}
                 autoComplete="email"
                 aria-invalid={validationErrors.email ? 'true' : 'false'}
               />
@@ -149,7 +155,7 @@ const Login = () => {
                 onChange={handleChange}
                 className={`input ${validationErrors.password ? 'input-error' : ''}`}
                 placeholder="Enter your password"
-                disabled={loading}
+                disabled={submitting}
                 autoComplete="current-password"
                 aria-invalid={validationErrors.password ? 'true' : 'false'}
               />
@@ -161,10 +167,10 @@ const Login = () => {
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={loading}
+              disabled={submitting}
               className="w-full btn btn-primary"
             >
-              {loading ? (
+              {submitting ? (
                 <span className="flex items-center justify-center">
                   <svg
                     className="animate-spin -ml-1 mr-3 h-5 w-5"

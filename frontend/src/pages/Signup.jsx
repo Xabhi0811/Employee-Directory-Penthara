@@ -8,7 +8,7 @@ import { useAuth } from '../context/AuthContext';
  */
 const Signup = () => {
   const navigate = useNavigate();
-  const { signup, loading, error, clearError, isAuthenticated } = useAuth();
+  const { signup, error, clearError, isAuthenticated } = useAuth();
   
   const [formData, setFormData] = useState({
     name: '',
@@ -18,6 +18,9 @@ const Signup = () => {
   });
   
   const [validationErrors, setValidationErrors] = useState({});
+  // Local submitting flag for button state. Deliberately separate from
+  // AuthDataContext's `loading`, which is the boot-time auth-check sentinel.
+  const [submitting, setSubmitting] = useState(false);
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -126,6 +129,7 @@ const Signup = () => {
     }
 
     try {
+      setSubmitting(true);
       await signup(formData);
       // Navigate to login on success
       navigate('/login', { replace: true });
@@ -134,6 +138,8 @@ const Signup = () => {
       if (process.env.NODE_ENV === 'development') {
         console.error('Signup failed:', err);
       }
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -166,7 +172,7 @@ const Signup = () => {
                 onChange={handleChange}
                 className={`input ${validationErrors.name ? 'input-error' : ''}`}
                 placeholder="John Doe"
-                disabled={loading}
+                disabled={submitting}
                 autoComplete="name"
                 aria-invalid={validationErrors.name ? 'true' : 'false'}
               />
@@ -188,7 +194,7 @@ const Signup = () => {
                 onChange={handleChange}
                 className={`input ${validationErrors.email ? 'input-error' : ''}`}
                 placeholder="you@example.com"
-                disabled={loading}
+                disabled={submitting}
                 autoComplete="email"
                 aria-invalid={validationErrors.email ? 'true' : 'false'}
               />
@@ -210,7 +216,7 @@ const Signup = () => {
                 onChange={handleChange}
                 className={`input ${validationErrors.password ? 'input-error' : ''}`}
                 placeholder="Create a strong password"
-                disabled={loading}
+                disabled={submitting}
                 autoComplete="new-password"
                 aria-invalid={validationErrors.password ? 'true' : 'false'}
               />
@@ -237,7 +243,7 @@ const Signup = () => {
                 onChange={handleChange}
                 className={`input ${validationErrors.confirmPassword ? 'input-error' : ''}`}
                 placeholder="Re-enter your password"
-                disabled={loading}
+                disabled={submitting}
                 autoComplete="new-password"
                 aria-invalid={validationErrors.confirmPassword ? 'true' : 'false'}
               />
@@ -249,10 +255,10 @@ const Signup = () => {
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={loading}
+              disabled={submitting}
               className="w-full btn btn-primary mt-6"
             >
-              {loading ? (
+              {submitting ? (
                 <span className="flex items-center justify-center">
                   <svg
                     className="animate-spin -ml-1 mr-3 h-5 w-5"

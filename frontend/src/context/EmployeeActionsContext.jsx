@@ -179,6 +179,10 @@ export const EmployeeActionsProvider = ({ children }) => {
         setError(null);
         const newEmployee = await createEmployee(employeeData);
         setEmployees((prev) => [newEmployee, ...prev]);
+        // Refresh department summaries so the Home page counts stay accurate.
+        // The backend cache is cleared on every mutation; this syncs the
+        // frontend context to match.
+        fetchDepartmentSummaries().catch(() => {});
         toast.success('Employee created successfully!', { id: loadingToast });
         return newEmployee;
       } catch (err) {
@@ -189,7 +193,7 @@ export const EmployeeActionsProvider = ({ children }) => {
         throw err;
       }
     },
-    [setEmployees, setError]
+    [setEmployees, setError, fetchDepartmentSummaries]
   );
 
   /**
@@ -206,6 +210,8 @@ export const EmployeeActionsProvider = ({ children }) => {
             (emp.id || emp._id) === id ? updatedEmployee : emp
           )
         );
+        // Refresh department summaries — an employee may have moved departments.
+        fetchDepartmentSummaries().catch(() => {});
         toast.success('Employee updated successfully!', { id: loadingToast });
         return updatedEmployee;
       } catch (err) {
@@ -216,7 +222,7 @@ export const EmployeeActionsProvider = ({ children }) => {
         throw err;
       }
     },
-    [setEmployees, setError]
+    [setEmployees, setError, fetchDepartmentSummaries]
   );
 
   /**
@@ -231,6 +237,8 @@ export const EmployeeActionsProvider = ({ children }) => {
         setEmployees((prev) =>
           prev.filter((emp) => (emp.id || emp._id) !== id)
         );
+        // Refresh department summaries so the headcount drops immediately.
+        fetchDepartmentSummaries().catch(() => {});
         toast.success('Employee deleted successfully', { id: loadingToast });
       } catch (err) {
         setError(err.message);
@@ -240,7 +248,7 @@ export const EmployeeActionsProvider = ({ children }) => {
         throw err;
       }
     },
-    [setEmployees, setError]
+    [setEmployees, setError, fetchDepartmentSummaries]
   );
 
   // Memoize actions object - these functions are stable and won't cause re-renders

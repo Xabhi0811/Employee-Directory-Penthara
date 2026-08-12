@@ -37,7 +37,8 @@
     "hpp": "^0.2.3",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^8.0.0",
-    "winston": "^3.19.0"
+    "winston": "^3.19.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",

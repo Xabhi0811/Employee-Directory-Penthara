@@ -25,7 +25,7 @@ router.use(authenticate);
 // Get all departments with their live employee counts
 router.get(
   '/',
-  applyCacheConfig('short'),
+  applyCacheConfig('revalidate'), // browser must always revalidate; server cache still answers fast
   etag(),
   cacheResponse({ cacheName: 'departments', ttl: 10 * 60 * 1000 }),
   employeeController.getDepartmentsWithCounts

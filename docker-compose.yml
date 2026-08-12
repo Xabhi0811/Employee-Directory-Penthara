@@ -1,0 +1,26 @@
+services:
+  backend:
+    image: xabhi/finalemployee-directory-backend:latest
+    container_name: employee-directory-backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      PORT: 5000
+      NODE_ENV: production
+      MONGO_URI: ${MONGO_URI:-mongodb+srv://cbittu349_db_user:<your-db-password>@employeedirectory.tzecpp4.mongodb.net/employee-directory?retryWrites=true&w=majority&appName=EmployeeDirectory}
+      CLIENT_URL: http://localhost:5173
+      ALLOWED_ORIGINS: http://localhost:5173,http://localhost:3000
+      JWT_SECRET: change-me-in-production
+      JWT_EXPIRES_IN: 24h
+      REFRESH_TOKEN_SECRET: change-me-in-production-too
+      REFRESH_TOKEN_EXPIRES_IN: 7d
+
+  frontend:
+    image: xabhi/finalemployee-directory-frontend:latest
+    container_name: employee-directory-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"

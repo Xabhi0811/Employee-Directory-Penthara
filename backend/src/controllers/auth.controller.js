@@ -13,24 +13,24 @@ import logger from '../utils/logger.js';
  * Secure settings for HttpOnly cookies
  */
 const getCookieOptions = () => {
-  const isProduction = process.env.NODE_ENV === 'production';
-  
+  const isHttps = process.env.CLIENT_URL?.startsWith('https://');
+
   return {
     httpOnly: true, // Prevent XSS attacks
-    secure: isProduction, // Only send over HTTPS in production
-    sameSite: isProduction ? 'strict' : 'lax', // CSRF protection
+    secure: isHttps, // Only send over HTTPS when the client is served over HTTPS
+    sameSite: isHttps ? 'strict' : 'lax', // CSRF protection
     maxAge: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
     path: '/', // Cookie available for all routes
   };
 };
 
 const getRefreshCookieOptions = () => {
-  const isProduction = process.env.NODE_ENV === 'production';
-  
+  const isHttps = process.env.CLIENT_URL?.startsWith('https://');
+
   return {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? 'strict' : 'lax',
+    secure: isHttps,
+    sameSite: isHttps ? 'strict' : 'lax',
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
     path: '/',
   };
