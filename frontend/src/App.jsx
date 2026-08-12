@@ -9,7 +9,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { PageLoadingFallback } from './components/LoadingFallback';
 import { useAuth } from './context/AuthContext';
 
-/**
+/*
  * Shown when a lazily-loaded route chunk fails to download, which typically
  * happens after a redeploy invalidates the previous build's chunk filenames.
  */
@@ -30,7 +30,7 @@ const ChunkLoadFallback = () => (
   </div>
 );
 
-/**
+/*
  * Lazily load a route, recovering from a stale-chunk error.
  *
  * A single reload is attempted (guarded so it can never loop); if the chunk is
@@ -51,6 +51,7 @@ const lazyRoute = (importPage) =>
 
 // Route components are code-split so each page ships in its own chunk.
 const Home = lazyRoute(() => import('./pages/Home'));
+const AllEmployees = lazyRoute(() => import('./pages/AllEmployees'));
 const DepartmentEmployees = lazyRoute(() => import('./pages/DepartmentEmployees'));
 const EmployeeDetails = lazyRoute(() => import('./pages/EmployeeDetails'));
 const AddEmployee = lazyRoute(() => import('./pages/AddEmployee'));
@@ -58,7 +59,7 @@ const EditEmployee = lazyRoute(() => import('./pages/EditEmployee'));
 const Login = lazyRoute(() => import('./pages/Login'));
 const Signup = lazyRoute(() => import('./pages/Signup'));
 
-/**
+/*
  * Auth Check Component
  * Checks authentication status on app mount
  */
@@ -72,7 +73,7 @@ const AuthCheck = ({ children }) => {
   return children;
 };
 
-/**
+/*
  * Main App Component
  * Sets up routing, global state, and global components
  */
@@ -99,6 +100,14 @@ function App() {
                         element={
                           <ProtectedRoute>
                             <Home />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/employees"
+                        element={
+                          <ProtectedRoute>
+                            <AllEmployees />
                           </ProtectedRoute>
                         }
                       />

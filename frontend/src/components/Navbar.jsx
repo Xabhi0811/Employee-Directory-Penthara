@@ -145,10 +145,12 @@ const Navbar = memo(() => {
     navigate('/login', { replace: true });
   }, [logout, navigate]);
 
-  // Memoize navigation links configuration
+  // Memoize navigation links configuration.
+  // `shortLabel` keeps the bar readable on narrow screens.
   const navLinks = useMemo(() => [
-    { path: '/', label: 'Home' },
-    { path: '/add', label: 'Add Employee' },
+    { path: '/', label: 'Home', shortLabel: 'Home' },
+    { path: '/employees', label: 'All Employees', shortLabel: 'All' },
+    { path: '/add', label: 'Add Employee', shortLabel: 'Add' },
   ], []);
 
   // Don't show navbar on login/signup pages
@@ -197,7 +199,7 @@ const Navbar = memo(() => {
 
             {/* Navigation Links and Theme Toggle */}
             <div className="flex items-center space-x-2 sm:space-x-3" role="navigation" aria-label="Page navigation">
-              {isAuthenticated && navLinks.map(({ path, label }) => (
+              {isAuthenticated && navLinks.map(({ path, label, shortLabel }) => (
                 <Link
                   key={path}
                   to={path}
@@ -209,7 +211,7 @@ const Navbar = memo(() => {
                   aria-current={isActive(path) ? 'page' : undefined}
                 >
                   <span className="hidden sm:inline">{label}</span>
-                  <span className="sm:hidden">{label === 'Add Employee' ? 'Add' : label}</span>
+                  <span className="sm:hidden">{shortLabel}</span>
                 </Link>
               ))}
               

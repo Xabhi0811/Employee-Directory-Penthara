@@ -9,15 +9,21 @@ import { API_ENDPOINTS } from '../constants/api.constants';
 
 /**
  * Get all employees with optional filters
- * @param {Object} filters - Optional search and department filters
+ * @param {Object} filters - Optional filters
+ * @param {string} [filters.search] - Text search across name, role, department
+ * @param {string} [filters.department] - Restrict to a single department
+ * @param {number} [filters.page] - Page number (defaults to 1 server-side)
+ * @param {number} [filters.limit] - Page size (server default 10, max 100)
  * @returns {Promise<Array>} - Array of employees
  */
 export const getEmployees = async (filters = {}) => {
-  const { search, department } = filters;
+  const { search, department, page, limit } = filters;
   const params = new URLSearchParams();
 
   if (search) params.append('search', search);
   if (department) params.append('department', department);
+  if (page) params.append('page', String(page));
+  if (limit) params.append('limit', String(limit));
 
   const queryString = params.toString();
   const url = queryString

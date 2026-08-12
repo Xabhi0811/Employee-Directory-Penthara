@@ -46,6 +46,14 @@ export const API_ENDPOINTS = {
 };
 
 /**
+ * Largest page size the employees endpoint accepts.
+ *
+ * The API clamps `limit` to 1–100 and defaults to 10, so any view that needs a
+ * complete list (rather than the first page) must ask for this explicitly.
+ */
+export const MAX_PAGE_SIZE = 100;
+
+/**
  * API Timeout
  */
 export const API_TIMEOUT = 10000; // 10 seconds
