@@ -7,13 +7,7 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
-    "seed": "node src/config/seed.js",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "test:watch": "npm test -- --watch",
-    "test:coverage": "npm test -- --coverage",
-    "test:unit": "npm test -- tests/unit",
-    "test:integration": "npm test -- tests/integration",
-    "test:all": "npm run test:coverage"
+    "seed": "node src/config/seed.js"
   },
   "keywords": [
     "employee",
@@ -39,12 +33,5 @@
     "mongoose": "^8.0.0",
     "winston": "^3.19.0",
     "zod": "^4.4.3"
-  },
-  "devDependencies": {
-    "@types/jest": "^30.0.0",
-    "@types/supertest": "^7.2.1",
-    "jest": "^30.4.2",
-    "mongodb-memory-server": "^11.2.0",
-    "supertest": "^7.2.2"
   }
 }

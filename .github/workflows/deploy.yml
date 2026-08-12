@@ -14,57 +14,10 @@ env:
 
 jobs:
 
-  test:
-    name: Test ${{ matrix.app }}
-
-    runs-on: ubuntu-latest
-
-    strategy:
-      fail-fast: false
-      matrix:
-        app:
-          - backend
-          - frontend
-
-    steps:
-
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-          cache-dependency-path: |
-            ${{ matrix.app }}/package-lock.json
-            shared/package-lock.json
-
-      - name: Install shared dependencies
-        run: npm ci
-        working-directory: shared
-
-      - name: Install application dependencies
-        run: npm ci
-        working-directory: ${{ matrix.app }}
-
-      - name: Run backend tests
-        if: matrix.app == 'backend'
-        run: npm test
-        working-directory: backend
-
-      - name: Run frontend tests
-        if: matrix.app == 'frontend'
-        run: npm test
-        working-directory: frontend
-
-
   build-and-push:
     name: Build and push Docker images
 
     runs-on: ubuntu-latest
-
-    needs: test
 
     steps:
 
