@@ -22,31 +22,24 @@ const Signup = () => {
   // AuthDataContext's `loading`, which is the boot-time auth-check sentinel.
   const [submitting, setSubmitting] = useState(false);
 
-  // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
       navigate('/', { replace: true });
     }
   }, [isAuthenticated, navigate]);
 
-  // Clear errors when component unmounts
   useEffect(() => {
     return () => {
       clearError();
     };
   }, [clearError]);
 
-  /**
-   * Handle input change
-   */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
-    
-    // Clear validation error for this field
     if (validationErrors[name]) {
       setValidationErrors((prev) => ({
         ...prev,
@@ -55,13 +48,9 @@ const Signup = () => {
     }
   };
 
-  /**
-   * Validate form data
-   */
   const validateForm = () => {
     const errors = {};
 
-    // Name validation
     if (!formData.name.trim()) {
       errors.name = 'Name is required';
     } else if (formData.name.trim().length < 2) {
@@ -70,14 +59,13 @@ const Signup = () => {
       errors.name = 'Name can only contain letters, spaces, hyphens, and apostrophes';
     }
 
-    // Email validation
     if (!formData.email.trim()) {
       errors.email = 'Email is required';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       errors.email = 'Please enter a valid email address';
     }
 
-    // Password validation (strong password requirements)
+    // Collect every unmet rule so the message can list them all at once.
     if (!formData.password) {
       errors.password = 'Password is required';
     } else {
@@ -103,7 +91,6 @@ const Signup = () => {
       }
     }
 
-    // Confirm password validation
     if (!formData.confirmPassword) {
       errors.confirmPassword = 'Please confirm your password';
     } else if (formData.password !== formData.confirmPassword) {
@@ -114,16 +101,9 @@ const Signup = () => {
     return Object.keys(errors).length === 0;
   };
 
-  /**
-   * Handle form submission
-   */
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Clear previous errors
     clearError();
-    
-    // Validate form
     if (!validateForm()) {
       return;
     }
@@ -131,10 +111,9 @@ const Signup = () => {
     try {
       setSubmitting(true);
       await signup(formData);
-      // Navigate to login on success
       navigate('/login', { replace: true });
     } catch (err) {
-      // Error handling is done in Context with toast
+      // The context already showed a toast, so this is just for local debugging.
       if (process.env.NODE_ENV === 'development') {
         console.error('Signup failed:', err);
       }

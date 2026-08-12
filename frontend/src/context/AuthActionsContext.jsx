@@ -27,8 +27,6 @@ export const AuthActionsProvider = ({ children }) => {
    */
   const checkAuth = useCallback(async () => {
     const requestKey = 'checkAuth';
-    
-    // Check if request is already pending
     if (pendingRequests.current.has(requestKey)) {
       return pendingRequests.current.get(requestKey);
     }

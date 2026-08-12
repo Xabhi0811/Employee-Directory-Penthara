@@ -270,11 +270,11 @@ class EmployeeService {
    * @throws {Error} If email already exists (409) or validation fails (400)
    * @example
    * const employee = await employeeService.createEmployee({
-   *   name: 'John Doe',
-   *   role: 'Software Engineer',
+   *   name: 'Priya Nair',
+   *   role: 'React JS Developer',
    *   department: 'Engineering',
-   *   email: 'john@example.com',
-   *   phone: '+1234567890',
+   *   email: 'priya.nair@company.com',
+   *   phone: '+919876543210',
    *   joiningDate: '2024-01-15'
    * });
    */
@@ -282,10 +282,8 @@ class EmployeeService {
     try {
       logger.info('Creating new employee', { email: employeeData.email });
 
-      // Transform to DTO
       const dto = CreateEmployeeDTO.fromRequest(employeeData);
 
-      // Check if email already exists
       const exists = await employeeRepository.exists({ email: dto.email });
       if (exists) {
         logger.warn(`Email already exists: ${dto.email}`);
@@ -294,7 +292,6 @@ class EmployeeService {
         throw error;
       }
 
-      // Create employee
       const employee = await employeeRepository.create(dto);
       logger.info(`Employee created successfully: ${employee._id}`);
 
@@ -415,8 +412,8 @@ class EmployeeService {
   /**
    * Delete an employee permanently
    * 
-   * ⚠️ This is a hard delete - the record is permanently removed from database
-   * Consider implementing soft delete for production use
+   * Note this is a hard delete - the record is permanently removed from the
+   * database. The model has softDelete()/archive() if that's ever preferred.
    * 
    * @async
    * @param {string} id - Employee MongoDB ObjectId

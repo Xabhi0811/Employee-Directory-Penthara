@@ -1,17 +1,18 @@
 /**
- * Frontend API Constants
- * Centralized API configuration
+ * Frontend API constants - base URL, endpoints and shared request settings.
  */
 
 /**
- * Validate required environment variables
+ * Reads VITE_API_URL and fails fast if it is missing, since every request needs it.
+ *
+ * @returns {string} The configured API base URL
  */
 const validateEnvironment = () => {
   const apiUrl = import.meta.env.VITE_API_URL;
   
   if (!apiUrl) {
     throw new Error(
-      '❌ VITE_API_URL environment variable is not configured.\n' +
+      'VITE_API_URL environment variable is not configured.\n' +
       'Please create a .env file in the frontend directory with:\n' +
       'VITE_API_URL=http://localhost:5000/api'
     );
@@ -20,14 +21,8 @@ const validateEnvironment = () => {
   return apiUrl;
 };
 
-/**
- * API Base URL from environment variable
- */
 export const API_BASE_URL = validateEnvironment();
 
-/**
- * API Endpoints
- */
 export const API_ENDPOINTS = {
   EMPLOYEES: '/employees',
   EMPLOYEE_BY_ID: (id) => `/employees/${id}`,
@@ -53,14 +48,8 @@ export const API_ENDPOINTS = {
  */
 export const MAX_PAGE_SIZE = 100;
 
-/**
- * API Timeout
- */
 export const API_TIMEOUT = 10000; // 10 seconds
 
-/**
- * HTTP Headers
- */
 export const API_HEADERS = {
   'Content-Type': 'application/json',
 };

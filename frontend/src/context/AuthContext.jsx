@@ -35,7 +35,6 @@ export const useAuth = () => {
   };
 };
 
-// Export separate hooks for fine-grained control
 export { useAuthData, useAuthActions };
 
 export default AuthProvider;

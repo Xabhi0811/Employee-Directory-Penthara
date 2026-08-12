@@ -34,13 +34,14 @@ export const EmployeeActionsProvider = ({ children }) => {
   const pendingRequests = useRef(new Map());
 
   /**
-   * Fetch all employees with request deduplication
+   * Loads employees into context state, collapsing duplicate in-flight calls.
+   *
+   * @param {Object} [filters] - Optional search, department, page and limit
+   * @returns {Promise<Array>} The employees that were loaded
    */
   const fetchEmployees = useCallback(
     async (filters = {}) => {
       const requestKey = `fetchEmployees:${JSON.stringify(filters)}`;
-      
-      // Check if request is already pending
       if (pendingRequests.current.has(requestKey)) {
         return pendingRequests.current.get(requestKey);
       }
@@ -69,13 +70,14 @@ export const EmployeeActionsProvider = ({ children }) => {
   );
 
   /**
-   * Fetch single employee with request deduplication
+   * Fetches one employee by id without writing it into the shared list.
+   *
+   * @param {string} id - Employee id
+   * @returns {Promise<Object>} The employee record
    */
   const fetchEmployee = useCallback(
     async (id) => {
       const requestKey = `fetchEmployee:${id}`;
-      
-      // Check if request is already pending
       if (pendingRequests.current.has(requestKey)) {
         return pendingRequests.current.get(requestKey);
       }
@@ -103,12 +105,12 @@ export const EmployeeActionsProvider = ({ children }) => {
   );
 
   /**
-   * Fetch departments with request deduplication
+   * Loads the plain list of department names used by filter controls.
+   *
+   * @returns {Promise<Array<string>>} Department names
    */
   const fetchDepartments = useCallback(async () => {
     const requestKey = 'fetchDepartments';
-    
-    // Check if request is already pending
     if (pendingRequests.current.has(requestKey)) {
       return pendingRequests.current.get(requestKey);
     }
@@ -170,7 +172,10 @@ export const EmployeeActionsProvider = ({ children }) => {
   }, [setDepartmentSummaries, setDepartmentsLoading, setDepartmentsError]);
 
   /**
-   * Add new employee
+   * Creates an employee, then refreshes department counts.
+   *
+   * @param {Object} employeeData - New employee field values
+   * @returns {Promise<Object>} The created employee
    */
   const addEmployee = useCallback(
     async (employeeData) => {
@@ -197,7 +202,11 @@ export const EmployeeActionsProvider = ({ children }) => {
   );
 
   /**
-   * Update existing employee
+   * Updates an employee, then refreshes department counts.
+   *
+   * @param {string} id - Employee id
+   * @param {Object} employeeData - Fields to change
+   * @returns {Promise<Object>} The updated employee
    */
   const modifyEmployee = useCallback(
     async (id, employeeData) => {
@@ -226,7 +235,10 @@ export const EmployeeActionsProvider = ({ children }) => {
   );
 
   /**
-   * Remove employee
+   * Deletes an employee, then refreshes department counts.
+   *
+   * @param {string} id - Employee id
+   * @returns {Promise<void>}
    */
   const removeEmployee = useCallback(
     async (id) => {
@@ -251,7 +263,7 @@ export const EmployeeActionsProvider = ({ children }) => {
     [setEmployees, setError, fetchDepartmentSummaries]
   );
 
-  // Memoize actions object - these functions are stable and won't cause re-renders
+  // Stable identity matters here - consumers re-render if this object changes.
   const actions = useMemo(
     () => ({
       fetchEmployees,
@@ -281,7 +293,10 @@ export const EmployeeActionsProvider = ({ children }) => {
 };
 
 /**
- * Hook to access employee actions
+ * Gives access to the employee action functions.
+ *
+ * @returns {Object} Employee actions
+ * @throws {Error} If used outside EmployeeActionsProvider
  */
 export const useEmployeeActions = () => {
   const context = useContext(EmployeeActionsContext);

@@ -1,21 +1,21 @@
 import { useState, useEffect } from 'react';
 
 /**
- * Custom hook for debouncing values
+ * Debounces a value so fast-changing input settles before it is used.
+ *
  * @param {any} value - Value to debounce
  * @param {number} delay - Delay in milliseconds
- * @returns {any} - Debounced value
+ * @returns {any} The value, updated only after it stops changing
  */
 const useDebounce = (value, delay = 500) => {
   const [debouncedValue, setDebouncedValue] = useState(value);
 
   useEffect(() => {
-    // Set up the timeout
     const handler = setTimeout(() => {
       setDebouncedValue(value);
     }, delay);
 
-    // Clean up the timeout if value changes before delay
+    // Restart the wait if the value changes before the delay is up.
     return () => {
       clearTimeout(handler);
     };

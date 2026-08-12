@@ -6,9 +6,6 @@
 import axios from 'axios';
 import { API_BASE_URL, API_TIMEOUT, API_HEADERS } from '../constants/api.constants';
 
-/**
- * Create axios instance with default configuration
- */
 const api = axios.create({
   baseURL: API_BASE_URL,
   timeout: API_TIMEOUT,
@@ -21,11 +18,14 @@ const api = axios.create({
   },
 });
 
-// PERFORMANCE: Track pending requests for deduplication
+// In-flight GET requests, keyed so duplicates can be collapsed.
 const pendingRequests = new Map();
 
 /**
- * Generate request key for deduplication
+ * Builds a unique key for a request so identical in-flight calls can be spotted.
+ *
+ * @param {Object} config - Axios request config
+ * @returns {string} Key combining method, url, params and body
  */
 const generateRequestKey = (config) => {
   const { method, url, params, data } = config;
@@ -38,19 +38,16 @@ const generateRequestKey = (config) => {
  */
 api.interceptors.request.use(
   (config) => {
-    // PERFORMANCE: Request deduplication for GET requests
     if (config.method === 'get') {
       const requestKey = generateRequestKey(config);
-      
+
       if (pendingRequests.has(requestKey)) {
-        // Return existing pending request
         if (process.env.NODE_ENV === 'development') {
-          console.log('🔄 Request deduplicated:', config.url);
+          console.log('Request deduplicated:', config.url);
         }
         return pendingRequests.get(requestKey);
       }
-      
-      // Store pending request
+
       pendingRequests.set(requestKey, config);
     }
 
@@ -59,9 +56,6 @@ api.interceptors.request.use(
     // API does not allow, which blocked every request. Response caching is
     // handled server-side by the in-memory LRU cache instead.
 
-    // Can add auth token here in future
-    // config.headers.Authorization = `Bearer ${token}`;
-    
     return config;
   },
   (error) => {
@@ -75,43 +69,36 @@ api.interceptors.request.use(
  */
 api.interceptors.response.use(
   (response) => {
-    // PERFORMANCE: Cleanup pending request
     if (response.config.method === 'get') {
       const requestKey = generateRequestKey(response.config);
       pendingRequests.delete(requestKey);
     }
 
-    // PERFORMANCE: Log cache status
     const cacheStatus = response.headers['x-cache'];
     if (cacheStatus && process.env.NODE_ENV === 'development') {
-      console.log(`📦 Cache status: ${cacheStatus} - ${response.config.url}`);
+      console.log(`Cache status: ${cacheStatus} - ${response.config.url}`);
     }
 
     return response;
   },
   (error) => {
-    // PERFORMANCE: Cleanup pending request on error
     if (error.config && error.config.method === 'get') {
       const requestKey = generateRequestKey(error.config);
       pendingRequests.delete(requestKey);
     }
 
-    // Handle different error scenarios
     if (error.response) {
-      // Server responded with error status
       const message = error.response.data?.message || 'Something went wrong';
       error.message = message;
-      
-      // Handle 401 Unauthorized - authentication required
+
+      // Deliberately no redirect on 401 - the calling context decides what to do.
       if (error.response.status === 401) {
-        // Don't redirect here - let the component/context handle it
         error.message = message || 'Authentication required. Please log in.';
       }
     } else if (error.request) {
-      // Request made but no response received
+      // Request went out but nothing came back.
       error.message = 'Network error. Please check your connection.';
     } else {
-      // Something else happened
       error.message = 'An unexpected error occurred';
     }
 

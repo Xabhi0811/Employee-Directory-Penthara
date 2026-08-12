@@ -10,13 +10,12 @@ const THEME_KEY = 'employee-directory-theme';
  */
 export const useTheme = () => {
   const [theme, setTheme] = useState(() => {
-    // Check localStorage first
+    // Saved choice wins, then the OS preference, then light as a last resort.
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem(THEME_KEY);
       if (stored === 'dark' || stored === 'light') {
         return stored;
       }
-      // Fall back to system preference
       if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
         return 'dark';
       }
@@ -24,7 +23,6 @@ export const useTheme = () => {
     return 'light';
   });
 
-  // Apply theme to document
   useEffect(() => {
     const root = document.documentElement;
     if (theme === 'dark') {
@@ -35,7 +33,7 @@ export const useTheme = () => {
     localStorage.setItem(THEME_KEY, theme);
   }, [theme]);
 
-  // Listen for system preference changes (only if no stored preference)
+  // Follow the OS only while the user hasn't picked a theme themselves.
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const handleChange = (e) => {

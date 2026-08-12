@@ -19,18 +19,15 @@ const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
   const location = useLocation();
 
-  // Show loading spinner while checking authentication
   if (loading) {
     return <PageLoadingFallback />;
   }
 
-  // Redirect to login if not authenticated
-  // Save the attempted location so we can redirect back after login
+  // Pass the attempted location along so login can send them back here.
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // User is authenticated, render children
   return children;
 };
 

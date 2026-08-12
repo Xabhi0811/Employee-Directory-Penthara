@@ -145,7 +145,6 @@ const Navbar = memo(() => {
     navigate('/login', { replace: true });
   }, [logout, navigate]);
 
-  // Memoize navigation links configuration.
   // `shortLabel` keeps the bar readable on narrow screens.
   const navLinks = useMemo(() => [
     { path: '/', label: 'Home', shortLabel: 'Home' },

@@ -20,31 +20,24 @@ const Login = () => {
   // AuthDataContext's `loading`, which is the boot-time auth-check sentinel.
   const [submitting, setSubmitting] = useState(false);
 
-  // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
       navigate('/', { replace: true });
     }
   }, [isAuthenticated, navigate]);
 
-  // Clear errors when component unmounts
   useEffect(() => {
     return () => {
       clearError();
     };
   }, [clearError]);
 
-  /**
-   * Handle input change
-   */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
-    
-    // Clear validation error for this field
     if (validationErrors[name]) {
       setValidationErrors((prev) => ({
         ...prev,
@@ -53,20 +46,15 @@ const Login = () => {
     }
   };
 
-  /**
-   * Validate form data
-   */
   const validateForm = () => {
     const errors = {};
 
-    // Email validation
     if (!formData.email.trim()) {
       errors.email = 'Email is required';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       errors.email = 'Please enter a valid email address';
     }
 
-    // Password validation
     if (!formData.password) {
       errors.password = 'Password is required';
     }
@@ -75,16 +63,9 @@ const Login = () => {
     return Object.keys(errors).length === 0;
   };
 
-  /**
-   * Handle form submission
-   */
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Clear previous errors
     clearError();
-    
-    // Validate form
     if (!validateForm()) {
       return;
     }
@@ -92,10 +73,9 @@ const Login = () => {
     try {
       setSubmitting(true);
       await login(formData);
-      // Navigate to home on success
       navigate('/', { replace: true });
     } catch (err) {
-      // Error handling is done in Context with toast
+      // The context already showed a toast, so this is just for local debugging.
       if (process.env.NODE_ENV === 'development') {
         console.error('Login failed:', err);
       }

@@ -10,8 +10,10 @@ import { useEmployeeData } from './EmployeeDataContext';
 import { useEmployeeActions } from './EmployeeActionsContext';
 
 /**
- * Combined Employee Provider
- * Wraps app with both data and actions providers
+ * Wraps children in both the data and actions providers.
+ *
+ * @param {Object} props
+ * @param {React.ReactNode} props.children - Tree that needs employee state
  */
 export const EmployeeProvider = ({ children }) => {
   return (
@@ -22,8 +24,10 @@ export const EmployeeProvider = ({ children }) => {
 };
 
 /**
- * Combined hook for backward compatibility
- * Components can use this or separate hooks for better optimization
+ * Convenience hook returning employee data and actions together. Prefer the
+ * separate hooks when a component only needs one half.
+ *
+ * @returns {Object} Combined employee data and action functions
  */
 export const useEmployeeContext = () => {
   const data = useEmployeeData();
@@ -35,7 +39,6 @@ export const useEmployeeContext = () => {
   };
 };
 
-// Export separate hooks for fine-grained control
 export { useEmployeeData, useEmployeeActions };
 
 export default EmployeeProvider;
