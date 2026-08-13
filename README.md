@@ -110,6 +110,4 @@ Things I know are missing or could be better — didn't want to pretend this is 
 - Password reset flow
 - Basic test coverage
 
----
 
-Made for practice/assignment purposes.
