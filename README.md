@@ -82,15 +82,13 @@ docker compose up -d
 
 ## API quick reference
 
-| Method | Route | What it does |
-|---|---|---|
-| POST | /api/auth/signup | create account |
-| POST | /api/auth/login | login, sets cookies |
-| GET | /api/employees | list employees (search/filter/paginate) |
-| POST | /api/employees | add employee |
-| PUT | /api/employees/:id | update employee |
-| DELETE | /api/employees/:id | soft-delete employee |
-| GET | /api/departments | department list with counts |
+POST   /api/auth/signup       - create account
+POST   /api/auth/login        - login, sets cookies
+GET    /api/employees         - list employees (search/filter/paginate)
+POST   /api/employees         - add employee
+PUT    /api/employees/:id     - update employee
+DELETE /api/employees/:id     - soft-delete employee
+GET    /api/departments       - department list with counts
 
 All employee/department routes need you to be logged in.
 
