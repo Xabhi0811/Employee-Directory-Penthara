@@ -59,6 +59,7 @@ const startServer = async () => {
         process.exit(1);
       }, 10000);
     };
+    
 
     process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
     process.on('SIGINT', () => gracefulShutdown('SIGINT'));
