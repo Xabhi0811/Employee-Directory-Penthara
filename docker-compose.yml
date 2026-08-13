@@ -24,3 +24,4 @@ services:
       - backend
     ports:
       - "5173:80"
+      
