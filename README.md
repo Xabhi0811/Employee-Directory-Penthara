@@ -8,6 +8,7 @@ Built this as a project to practice building a production-style app with proper 
 
 ## Live Features
 
+
 - Signup/Login with JWT stored in HttpOnly cookies (not localStorage, so it's safer against XSS)
 - View employees grouped by department on the home page
 - Global search across all employees
